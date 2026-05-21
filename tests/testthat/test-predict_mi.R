@@ -23,6 +23,7 @@ imp <- mice(
   m = 5,
   maxit = 5,
   seed = 1,
+  printFlag = FALSE,
   predictorMatrix = predmat,
   ignore = ifelse(dat$set == "test", TRUE, FALSE)
 )

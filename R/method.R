@@ -13,11 +13,14 @@ make.method <- function(
   data,
   where = make.where(data),
   blocks = make.blocks(data),
-  defaultMethod = c("pmm", "logreg", "polyreg", "polr")
+  defaultMethod = c("pmm", "logreg", "polyreg", "polr"),
+  imp_comp = FALSE
 ) {
   method <- rep("", length(blocks))
   names(method) <- names(blocks)
+  nimp <- nimp(where, blocks)
   for (j in names(blocks)) {
+    if (!imp_comp && nimp[j] == 0) next 
     yvar <- blocks[[j]]
     if (length(yvar) == 1L) {
       y <- data[, yvar]
@@ -29,19 +32,18 @@ make.method <- function(
     }
     method[j] <- defaultMethod[k]
   }
-  nimp <- nimp(where, blocks)
-  method[nimp == 0] <- ""
   method
 }
 
 
-check.method <- function(method, data, where, blocks, defaultMethod) {
+check.method <- function(method, data, where, blocks, defaultMethod, imp_comp) {
   if (is.null(method)) {
     return(make.method(
       data = data,
       where = where,
       blocks = blocks,
-      defaultMethod = defaultMethod
+      defaultMethod = defaultMethod,
+      imp_comp = imp_comp
     ))
   }
   nimp <- nimp(where, blocks)
@@ -53,7 +55,6 @@ check.method <- function(method, data, where, blocks, defaultMethod) {
       stop("Cannot have a passive imputation method for every column.")
     }
     method <- rep(method, length(blocks))
-    method[nimp == 0] <- ""
   }
 
   # check the length of the argument
@@ -159,7 +160,9 @@ check.method <- function(method, data, where, blocks, defaultMethod) {
       )
     }
   }
-  method[nimp == 0] <- ""
+  if (imp_comp == FALSE){
+    method[nimp == 0] <- ""
+  }
   unlist(method)
 }
 

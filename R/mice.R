@@ -245,6 +245,10 @@
 #' are created by a simple random draw from the data. Note that specification of
 #' \code{data.init} will start all \code{m} Gibbs sampling streams from the same
 #' imputation.
+#' @param imp_comp A bool indicating if an imputation model should be fitted for
+#' all variables, regardless if they have missings or not. The default 
+#' \code{FALSE} implies that only imputation functions are fit for columns with
+#' missings. 
 #' @param \dots Named arguments that are passed down to the univariate imputation
 #' functions.
 #'
@@ -336,6 +340,7 @@ mice <- function(
   printFlag = getOption("mice.printFlag", TRUE),
   seed = NA,
   data.init = NULL,
+  imp_comp = FALSE,
   ...
 ) {
   call <- match.call()
@@ -450,7 +455,8 @@ mice <- function(
     data = data,
     where = where,
     blocks = blocks,
-    defaultMethod = defaultMethod
+    defaultMethod = defaultMethod,
+    imp_comp = imp_comp
   )
   post <- check.post(post, data)
   blots <- check.blots(blots, data, blocks)
